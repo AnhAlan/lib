@@ -69,7 +69,7 @@ struct Two_sat {
             if (comp[u] == comp[NOT(u)]) {
                 return {}; // fail
             }
-            ans[u] = comp[u] > comp[NOT(u)];
+            ans[u] = comp[u] < comp[NOT(u)];
         }
         return ans;
     }
