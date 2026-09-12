@@ -1,12 +1,12 @@
+struct Trie_node {
+    int child[2];
+    int cnt;
+    Trie_node() {
+        child[0] = child[1] = -1;
+        cnt = 0;
+    }
+};
 struct Trie {
-    struct Trie_node {
-        int child[2];
-        int cnt;
-        Trie_node() {
-            child[0] = child[1] = -1;
-            cnt = 0;
-        }
-    };
     vector<Trie_node> node;
     int root;
     int xor_mask;

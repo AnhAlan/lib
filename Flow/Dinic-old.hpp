@@ -18,7 +18,6 @@ struct Dinic{
         adj.assign(_n + 1, {});
         level.assign(_n + 1, 0);
         ptr.assign(_n + 1, 0);
-        edges.assign(_n + 1, {});
     }
     void add(int u, int v, long long cap){
         Edge A = {v, (int) adj[v].size(), cap};

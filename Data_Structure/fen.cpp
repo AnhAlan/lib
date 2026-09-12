@@ -1,9 +1,9 @@
 template<typename T>
-struct FenWick{
+struct Fenwick{
     int n;
     vector<T> bit;
-    FenWick(){}
-    FenWick(int _n){
+    Fenwick(){}
+    Fenwick(int _n){
         n = _n;
         bit.assign(n + 1, 0);
     }

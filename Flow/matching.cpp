@@ -22,7 +22,6 @@ struct Hopcroft{
                 level[u] = 0;
                 q.push(u);
             }else level[u] = INF;
-            ptr[u] = 0;
         }
         bool found = false;
         while(!q.empty()){
@@ -55,6 +54,7 @@ struct Hopcroft{
     int max_matching(){
         int cnt = 0;
         while(bfs()){
+            fill(ptr.begin(), ptr.end(), 0);
             for(int u = 1; u <= n; u++){
                 if(!pair_u[u] && dfs(u)){
                     cnt++;

@@ -29,22 +29,22 @@ struct Merge {
 };
 
 template<typename T, typename F = Merge<T>>
-struct SegTree {
+struct Segtree {
     int n;
-    vector<Node<T>> seg;
+    vector<Node<T>> st;
     vector<T> lazy;
     F merge;
     
-    SegTree() : n(0){}
-    SegTree(int _n) {
+    Segtree() : n(0){}
+    Segtree(int _n) {
         n = _n;
-        seg.assign(4 * n + 5, Node<T>());
+        st.assign(4 * n + 5, Node<T>());
         lazy.assign(4 * n + 5, 0);
     }
     void apply(int id, int l, int r, T val) {
-        seg[id].sum += (r - l + 1) * val; 
-        seg[id].mn += val;              
-        seg[id].mx += val;              
+        st[id].sum += (r - l + 1) * val; 
+        st[id].mn += val;              
+        st[id].mx += val;              
         lazy[id] += val;
     }
     void push_down(int id, int l, int r) {
@@ -58,13 +58,13 @@ struct SegTree {
     
     void build(int id, int l, int r, const vector<T> &a) {
         if (l == r) {
-            seg[id] = Node<T>(a[l]);
+            st[id] = Node<T>(a[l]);
             return;
         }
         int mid = (l + r) / 2;
         build(id * 2, l, mid, a);
         build(id * 2 + 1, mid + 1, r, a);
-        seg[id] = merge(seg[id * 2], seg[id * 2 + 1]);
+        st[id] = merge(st[id * 2], st[id * 2 + 1]);
     }
     
     void update_range(int id, int l, int r, int u, int v, const T &val) {
@@ -77,17 +77,17 @@ struct SegTree {
         int mid = (l + r) / 2;
         update_range(id * 2, l, mid, u, v, val);
         update_range(id * 2 + 1, mid + 1, r, u, v, val);
-        seg[id] = merge(seg[id * 2], seg[id * 2 + 1]);
+        st[id] = merge(st[id * 2], st[id * 2 + 1]);
     }
     
     Node<T> get_range(int id, int l, int r, int u, int v) {
         if (l > v || r < u) return merge.none();
-        if (l >= u && r <= v) return seg[id];
+        if (l >= u && r <= v) return st[id];
         push_down(id, l, r);
         int mid = (l + r) / 2;
         return merge(get_range(id * 2, l, mid, u, v), get_range(id * 2 + 1, mid + 1, r, u, v));
     }
     /*
-        SegTree<int, Merge<int> > st(n)
+        Segtree<int, Merge<int> > st(n)
     */
 };

@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-
 #define debug(...) cerr << "[" << #__VA_ARGS__ << "] = ", dbg(__VA_ARGS__), cerr << "\n"
 // Pair
 template<typename T1, typename T2>
@@ -27,10 +26,12 @@ template<typename T>
 ostream& operator<<(ostream& os, const vector<vector<T>>& v) {
     os << "{" << "\n";
     for (size_t i = 0; i < v.size(); i++) {
+        os << "{";
         for (size_t j = 0; j < v[i].size(); j++) {
             os << v[i][j];
             if (j + 1 < v[i].size()) os << ",";
         }
+        os << "},";
         os << "\n";
     }
     os << "}";
@@ -159,46 +160,6 @@ ostream& operator<<(ostream& os, stack<T> st) {
     os << "}";
     return os;
 }
-
-// debug arr + vector [l, r]
-template<typename T>
-struct dbg_arr_wrapper {
-    const T* arr;
-    int l, r;
-    friend ostream& operator<<(ostream& os, const dbg_arr_wrapper& w) {
-        os << "[";
-        for (int i = w.l; i <= w.r; i++) {
-            os << w.arr[i];
-            if (i < w.r) os << ",";
-        }
-        os << "]";
-        return os;
-    }
-};
-template<typename T>
-dbg_arr_wrapper<T> dbg_arr(const T arr[], int l, int r) { return {arr, l, r}; }
-template<typename T>
-dbg_arr_wrapper<T> dbg_arr(const T arr[], int n) { return {arr, 0, n - 1}; }
-template<typename T>
-struct dbg_sub_wrapper {
-    const vector<T>& v;
-    int l, r;
-    friend ostream& operator<<(ostream& os, const dbg_sub_wrapper& w) {
-        os << "{";
-        for (int i = w.l; i <= w.r; i++) {
-            if (i >= 0 && i < (int)w.v.size()) {
-                os << w.v[i];
-                if (i < w.r) os << ",";
-            }
-        }
-        os << "}";
-        return os;
-    }
-};
-template<typename T>
-dbg_sub_wrapper<T> dbg_sub(const vector<T>& v, int l, int r) { return {v, l, r}; }
-#define debug_arr(arr, l, r) debug(dbg_arr(arr, l, r))
-#define debug_vec(v, l, r) debug(dbg_sub(v, l, r))
 
 // Bitset
 template<size_t N>

@@ -30,9 +30,6 @@ struct Dsu{
 	bool same(int u, int v){
 		return find(u) == find(v);
 	}
-	void next(int u){
-		par[find(u)] = find(u + 1);
-	}
 	vector<vector<int> > group(){
 		vector<vector<int> > res(n + 1);
 		for(int i = 1; i <= n; i++){
@@ -41,7 +38,7 @@ struct Dsu{
 		vector<vector<int> > ans;
 		for(int i = 1; i <= n; i++){
 			if(!res[i].empty()){
-			ans.push_back(res[i]);
+			    ans.push_back(res[i]);
 			}
 		}
 		return ans;

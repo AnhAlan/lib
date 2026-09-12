@@ -1,18 +1,18 @@
-struct DsuRollBack {
-	struct Save{
-		int u, old_par_u;
-		int v, old_par_v;
-		Save(){}
-		Save(int _u, int _old_par_u, int _v, int _old_par_v){
-			u = _u, old_par_u = _old_par_u;
-			v = _v, old_par_v = _old_par_v;
-		}
-	};
+struct Save{
+    int u, old_par_u;
+    int v, old_par_v;
+    Save(){}
+    Save(int _u, int _old_par_u, int _v, int _old_par_v){
+        u = _u, old_par_u = _old_par_u;
+        v = _v, old_par_v = _old_par_v;
+    }
+};
+struct Dsu_rollback {
 	int n, comp;
 	vector<int> par;
 	stack<Save> st;
-	DsuRollBack(){}
-	DsuRollBack(int _n) : n(_n){
+	Dsu_rollback(){}
+	Dsu_rollback(int _n) : n(_n){
 		comp = _n;
 		par.assign(n + 1, -1);
 	}

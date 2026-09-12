@@ -4,7 +4,10 @@ class Undigraph : public Graph<T> {
     using Graph<T>:: adj;
     using Graph<T>:: edges;
     using Graph<T>:: n;
-    Undigraph(int _n = 0) : Graph<T>(_n){}
+    using Graph<T>::init;
+    Undigraph(int _n = 0) {
+        if (_n) init(_n);
+    }
     int add(int from, int to, T cost = 1){
         int id = (int) edges.size();
         adj[from].push_back(id);
