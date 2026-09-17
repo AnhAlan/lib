@@ -1,23 +1,21 @@
-template<typename T>
 struct Two_sat {
     int n;
-    Digraph<T> g;
     vector<int> low, num, comp;
     vector<bool> in_stack;
     stack<int> st;
     int timer, scc_cnt;
-    Two_sat(int _n = 0) {
-        if (_n) init(_n);
-    }
+    Two_sat() {}
     void init(int _n) {
+        assert(g.digraph);
+        assert(_n * 2 == g.n);
         n = _n;
-        g.init(2 * n);
-        low.resize(2 * n + 1);
+        low.assign(2 * n + 1, 0);
         num.assign(2 * n + 1, 0);
-        comp.resize(2 * n + 1);
+        comp.assign(2 * n + 1, 0);
         in_stack.assign(2 * n + 1, false);
         timer = 0;
         scc_cnt = 0;
+        while (!st.empty()) st.pop();
     }
     int NOT(int u) {
         return u + (u <= n ? n : -n);

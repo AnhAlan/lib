@@ -1,52 +1,60 @@
 template<typename T>
-struct Merge{
-    T operator()(const T &A, const T &B) const {
-        return max(A, B);
+struct Node {
+    T mn, mx;
+    Node() {
+        mn = numeric_limits<T>::max();
+        mx = numeric_limits<T>::lowest();
     }
-    T none() const {
-        return numeric_limits<T>::lowest();
-        //return numeric_limits<T>::max();
+    Node(T val) {
+        mn = mx = val;
     }
 };
-
-template<typename T, typename F = Merge<T> >
+template<typename T>
+Node<T> merge(const Node<T> &A, const Node<T> &B) {
+    Node<T> res;
+    res.mn = min(A.mn, B.mn);
+    res.mx = max(A.mx, B.mx);
+    return res;
+}
+template<typename T>
+Node<T> none() {
+    return Node<T>();
+}
+template<typename T>
 struct Lca {
-    const Forest<T> &f;
     int n, LOG;
-    F merge;
     vector<vector<int> > par;
-    vector<vector<T> > lca_edges;
+    vector<vector<Node<T> > > lca_edges;
     vector<int> high;
     vector<bool> vis;
-
-    Lca(const Forest<T> &_f) : f(_f), n(f.n) {
+    Lca() {}
+    void init() {
+        n = g.n;
         assert(n > 0);
         LOG = 32 - __builtin_clz(n);
         par.assign(n + 1, vector<int>(LOG + 1, 0));
-        lca_edges.assign(n + 1, vector<T>(LOG + 1, merge.none()));
+        lca_edges.assign(n + 1, vector<Node<T> >(LOG + 1, none<T>()));
         high.assign(n + 1, 0);
         vis.assign(n + 1, false);
     }
-
     void dfs(int u) {
         vis[u] = true;
-        for(int id : f.adj[u]) {
-            int v = f.edges[id].from ^ f.edges[id].to ^ u;
+        for(int id : g.adj[u]) {
+            int v = g.edges[id].from ^ g.edges[id].to ^ u;
             if(v == par[u][0]) continue;
-            lca_edges[v][0] = f.edges[id].cost; 
+            lca_edges[v][0] = Node<T>(g.edges[id].cost);
             par[v][0] = u;
             high[v] = high[u] + 1;
             dfs(v);
         }
     }
-
     void build() {
         high[0] = -1;
-        for (int i = 1; i <= n; i++) {
+        for(int i = 1; i <= n; i++) {
             if(!vis[i]) {
                 high[i] = 0;
                 par[i][0] = 0;
-                lca_edges[i][0] = merge.none();
+                lca_edges[i][0] = none<T>();
                 dfs(i);
             }
         }
@@ -55,19 +63,24 @@ struct Lca {
                 if(par[i][j - 1] != 0) {
                     int p = par[i][j - 1];
                     par[i][j] = par[p][j - 1];
-                    lca_edges[i][j] = merge(lca_edges[i][j - 1], lca_edges[p][j - 1]);
-                } else {
+                    lca_edges[i][j] = merge(
+                        lca_edges[i][j - 1],
+                        lca_edges[p][j - 1]
+                    );
+                }
+                else {
                     par[i][j] = 0;
-                    lca_edges[i][j] = merge.none();
+                    lca_edges[i][j] = none<T>();
                 }
             }
         }
     }
-
     int lca(int u, int v) {
         if(high[u] < high[v]) swap(u, v);
         for(int i = LOG; i >= 0; i--) {
-            if(par[u][i] != 0 && high[par[u][i]] >= high[v]) {
+            if(par[u][i] != 0 &&
+               high[par[u][i]] >= high[v]) {
+
                 u = par[u][i];
             }
         }
@@ -80,11 +93,12 @@ struct Lca {
         }
         return par[u][0];
     }
-    T get_path(int u, int v) {
-        T res = merge.none();
+    Node<T> get_path(int u, int v) {
+        Node<T> res = none<T>();
         if(high[u] < high[v]) swap(u, v);
         for(int i = LOG; i >= 0; i--) {
-            if(par[u][i] != 0 && high[par[u][i]] >= high[v]) {
+            if(par[u][i] != 0 &&
+               high[par[u][i]] >= high[v]) {
                 res = merge(res, lca_edges[u][i]);
                 u = par[u][i];
             }

@@ -3,7 +3,7 @@ struct Fenwick{
     int n;
     vector<T> bit;
     Fenwick(){}
-    Fenwick(int _n){
+    void init(int _n) {
         n = _n;
         bit.assign(n + 1, 0);
     }

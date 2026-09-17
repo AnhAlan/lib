@@ -1,8 +1,5 @@
-template<typename T, typename F = Merge<T>>
+template<typename T>
 struct Hld {
-    const Forest<T> &f;
-    Segtree<T, F> st; 
-    F merge;         
     int n;
     vector<int> par, high;
     vector<int> heavy, head, pos;
@@ -10,9 +7,9 @@ struct Hld {
     vector<int> edge_to_node;
     vector<int> par_id;
     int cur_pos;
-
-    Hld(const Forest<T> &_f) : f(_f), n(_f.n) {
-        st = Segtree<T, F>(n);
+    Hld() {}
+    void init() {
+        n = g.n;
         par.assign(n + 1, 0);
         high.assign(n + 1, 0);
         heavy.assign(n + 1, 0);
@@ -20,70 +17,64 @@ struct Hld {
         pos.assign(n + 1, 0);
         sz.assign(n + 1, 0);
         par_id.assign(n + 1, 0);
-        edge_to_node.assign(f.edges.size() + 5, 0);
+        edge_to_node.assign((int)g.edges.size() + 5, 0);
         cur_pos = 0;
     }
-
     void dfs(int u, int p) {
         sz[u] = 1;
         par[u] = p;
         heavy[u] = 0;
-        int maxSz = 0;
-        for (int id : f.adj[u]) {
-            int v = f.edges[id].from ^ f.edges[id].to ^ u;
+        int max_sz = 0;
+        for (int id : g.adj[u]) {
+            int v = g.edges[id].from ^ g.edges[id].to ^ u;
             if (v == p) continue;
             high[v] = high[u] + 1;
             par_id[v] = id;
             edge_to_node[id] = v;
             dfs(v, u);
             sz[u] += sz[v];
-            if (sz[v] > maxSz) {
-                maxSz = sz[v];
+            if (sz[v] > max_sz) {
+                max_sz = sz[v];
                 heavy[u] = v;
             }
         }
     }
-
     void dfs_hld(int u, int h) {
         head[u] = h;
         pos[u] = ++cur_pos;
         if (heavy[u]) {
             dfs_hld(heavy[u], h);
         }
-        for (int id : f.adj[u]) {
-            int v = f.edges[id].from ^ f.edges[id].to ^ u;
+        for (int id : g.adj[u]) {
+            int v = g.edges[id].from ^ g.edges[id].to ^ u;
             if (v == par[u] || v == heavy[u]) continue;
             dfs_hld(v, v);
         }
     }
-
     void build(int root = 1) {
         high[root] = 0;
         dfs(root, 0);
         dfs_hld(root, root);
     }
-
-    void build_node(const vector<T> &a) {
-        vector<T> v(n + 1); 
+    void build_node(const vector<int> &a) {
+        vector<int> v(n + 1, 0);
         for (int i = 1; i <= n; i++) {
             v[pos[i]] = a[i];
         }
-        st.build(1, 1, n, v);
+        st.init(n, v);
     }
-
     void build_edges() {
-        vector<T> v(n + 1);
+        vector<int> v(n + 1, 0);
         for (int i = 1; i <= n; i++) {
             if (par_id[i] != 0) {
                 int id = par_id[i];
-                v[pos[i]] = f.edges[id].cost;
+                v[pos[i]] = g.edges[id].cost;
             }
         }
-        st.build(1, 1, n, v);
+        st.init(n, v);
     }
-
     Node<T> get_node(int u, int v) {
-        Node<T> res = merge.none(); 
+        Node<T> res = none<T>();
         while (head[u] != head[v]) {
             if (high[head[u]] < high[head[v]]) swap(u, v);
             res = merge(res, st.get_range(1, 1, n, pos[head[u]], pos[u]));
@@ -93,7 +84,6 @@ struct Hld {
         res = merge(res, st.get_range(1, 1, n, pos[u], pos[v]));
         return res;
     }
-
     void update_node_range(int u, int v, T w) {
         while (head[u] != head[v]) {
             if (high[head[u]] < high[head[v]]) swap(u, v);
@@ -103,13 +93,11 @@ struct Hld {
         if (high[u] > high[v]) swap(u, v);
         st.update_range(1, 1, n, pos[u], pos[v], w);
     }
-
     void update_node_point(int u, T w) {
         st.update_range(1, 1, n, pos[u], pos[u], w);
     }
-
     Node<T> get_edges(int u, int v) {
-        Node<T> res = merge.none(); 
+        Node<T> res = none<T>();
         while (head[u] != head[v]) {
             if (high[head[u]] < high[head[v]]) swap(u, v);
             res = merge(res, st.get_range(1, 1, n, pos[head[u]], pos[u]));
@@ -120,7 +108,6 @@ struct Hld {
         res = merge(res, st.get_range(1, 1, n, pos[u] + 1, pos[v]));
         return res;
     }
-
     void update_edges_range(int u, int v, T w) {
         while (head[u] != head[v]) {
             if (high[head[u]] < high[head[v]]) swap(u, v);
@@ -131,7 +118,6 @@ struct Hld {
         if (high[u] > high[v]) swap(u, v);
         st.update_range(1, 1, n, pos[u] + 1, pos[v], w);
     }
-
     void update_edge_point(int edge_id, T w) {
         int u = edge_to_node[edge_id];
         st.update_range(1, 1, n, pos[u], pos[u], w);

@@ -12,10 +12,11 @@ struct Dsu_rollback {
 	vector<int> par;
 	stack<Save> st;
 	Dsu_rollback(){}
-	Dsu_rollback(int _n) : n(_n){
-		comp = _n;
-		par.assign(n + 1, -1);
-	}
+    void init(int _n) {
+        n = _n;
+        comp = _n;
+        par.assign(n + 1, -1);
+    }
 	void reset(){
 		for(int i = 1; i <= n; i++){
 			par[i] = -1;
@@ -27,7 +28,7 @@ struct Dsu_rollback {
 		}
 		return u;
 	}
-	bool unite(int u, int v){
+	bool merge(int u, int v){
 		u = find(u);
 		v = find(v);
 		if(u == v){

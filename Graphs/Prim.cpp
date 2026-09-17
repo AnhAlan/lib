@@ -4,16 +4,19 @@ struct Prim {
         int u, v;
         T w;
     };
-    const Undigraph<T> &g;
     int n;
     vector<bool> used;
     vector<int> parent;
     vector<T> d;
     vector<Edge> MST;
-    Prim(const Undigraph<T> &_g) : g(_g), n(_g.n) {
+    Prim() {}
+    void init() {
+        n = g.n;
+        assert(!g.digraph);
         used.assign(n + 1, false);
         parent.assign(n + 1, -1);
         d.assign(n + 1, numeric_limits<T>::max());
+        MST.clear();
     }
     T mst(int start = 1){
         MST.clear();
@@ -37,8 +40,9 @@ struct Prim {
         }
         return total;
     }
-    forest<T> build_tree(){
-        forest<T> tree(n);
+    Graph<T> build_tree(){
+        Graph<T> tree;
+        tree.init(n);
         for(auto [u, v, w] : MST){
             tree.add(u, v, w);
         }
@@ -47,11 +51,8 @@ struct Prim {
     }
 private:
     T mst_from(int start){
-        priority_queue<
-            pair<T,int>,
-            vector<pair<T,int>>,
-            greater<pair<T,int>>
-        > pq;
+        uisng P = pair<T, int>;
+        priority_queue< P, vector<P>, greater<P>> pq;
         T cost = 0;
         pq.push({0, start});
         while(!pq.empty()){

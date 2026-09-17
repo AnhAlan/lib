@@ -9,35 +9,33 @@ struct Node {
         is_null = false;
     }
 };
-
 template<typename T>
-struct Merge {
-    Node<T> operator()(const Node<T> &a, const Node<T> &b) const {
-        if (a.is_null) return b;
-        if (b.is_null) return a;
-        Node<T> res;
-        res.is_null = false;
-        res.sum = a.sum + b.sum;
-        res.pref = max(a.pref, a.sum + b.pref);
-        res.suff = max(b.suff, b.sum + a.suff);
-        res.best = max({a.best, b.best, a.suff + b.pref});
-        return res;
-    }
-    static Node<T> none() { 
-        return Node<T>();
-    }
-};
-
-template<typename T, typename F = Merge<T>>
+Node<T> merge(const Node<T> &a, const Node<T> &b) {
+    if (a.is_null) return b;
+    if (b.is_null) return a;
+    Node<T> res;
+    res.is_null = false;
+    res.sum = a.sum + b.sum;
+    res.pref = max(a.pref, a.sum + b.pref);
+    res.suff = max(b.suff, b.sum + a.suff);
+    res.best = max({a.best, b.best, a.suff + b.pref});
+    return res;
+}
+template<typename T>
+Node<T> none() {
+    return Node<T>();
+}
+template<typename T>
 struct Segtree {
     int n;
-    F merge;
     vector<Node<T>> seg;
-    Segtree(int _n = 0) {
+    Segtree() {}
+    void init(int _n, const vector<int> &a) {
         n = _n;
-        seg.assign(4 * n + 5, F::none());
+        seg.resize(4 * n + 5);
+        build(1, 1, n, a);
     }
-    void build(int id, int l, int r, const vector<T> &a) {
+    void build(int id, int l, int r, const vector<int> &a) {
         if (l == r) {
             seg[id] = Node<T>(a[l]);
             return;
@@ -47,7 +45,6 @@ struct Segtree {
         build(id * 2 + 1, mid + 1, r, a);
         seg[id] = merge(seg[id * 2], seg[id * 2 + 1]);
     }
-    
     // only update 1 point
     void update(int id, int l, int r, int pos, T v){
         if(l == r){
@@ -60,14 +57,11 @@ struct Segtree {
         seg[id] = merge(seg[id * 2], seg[id * 2 + 1]);
     }
     Node<T> get_range(int id, int l, int r, int u, int v) {
-        if (r < u || l > v) return F::none(); 
+        if (r < u || l > v) return none<T>(); 
         if (u <= l && r <= v) return seg[id];
         int mid = (l + r) / 2;
         Node<T> left = get_range(id * 2, l, mid, u, v);
         Node<T> right = get_range(id * 2 + 1, mid + 1, r, u, v);
         return merge(left, right);
     }
-    /*
-        Segtree<long long, Merge<long long>> st(n);
-    */
 };

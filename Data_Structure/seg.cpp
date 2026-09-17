@@ -11,35 +11,32 @@ struct Node {
     }
 };
 template<typename T>
-struct Merge {
-    Node<T> operator()(const Node<T> &A, const Node<T> &B) const {
-        Node<T> res;
-        res.sum = A.sum + B.sum;
-        res.mn = min(A.mn, B.mn);
-        res.mx = max(A.mx, B.mx);
-        return res;
-    }
-    Node<T> none() {
-        Node<T> res;
-        res.sum = 0;
-        res.mn = numeric_limits<T>::max();
-        res.mx = numeric_limits<T>::lowest();
-        return res;
-    }
-};
-
-template<typename T, typename F = Merge<T>>
+Node<T> merge(const Node<T> &A, const Node<T> &B) {
+    Node<T> res;
+    res.sum = A.sum + B.sum;
+    res.mn = min(A.mn, B.mn);
+    res.mx = max(A.mx, B.mx);
+    return res;
+}
+template<typename T>
+Node<T> none() {
+    Node<T> res;
+    res.sum = 0;
+    res.mn = numeric_limits<T>::max();
+    res.mx = numeric_limits<T>::lowest();
+    return res;
+}
+template<typename T>
 struct Segtree {
     int n;
     vector<Node<T>> st;
     vector<T> lazy;
-    F merge;
-    
-    Segtree() : n(0){}
-    Segtree(int _n) {
+    Segtree(){}
+    void init(int _n, const vector<int> &a) {
         n = _n;
-        st.assign(4 * n + 5, Node<T>());
-        lazy.assign(4 * n + 5, 0);
+        st.resize(4 * n + 5);
+        lazy.resize(4 * n + 5);
+        build(1, 1, n, a);
     }
     void apply(int id, int l, int r, T val) {
         st[id].sum += (r - l + 1) * val; 
@@ -55,8 +52,7 @@ struct Segtree {
             lazy[id] = 0;                           
         }
     }
-    
-    void build(int id, int l, int r, const vector<T> &a) {
+    void build(int id, int l, int r, const vector<int> &a) {
         if (l == r) {
             st[id] = Node<T>(a[l]);
             return;
@@ -66,7 +62,6 @@ struct Segtree {
         build(id * 2 + 1, mid + 1, r, a);
         st[id] = merge(st[id * 2], st[id * 2 + 1]);
     }
-    
     void update_range(int id, int l, int r, int u, int v, const T &val) {
         if (l > v || r < u) return;
         if (l >= u && r <= v) {
@@ -79,15 +74,11 @@ struct Segtree {
         update_range(id * 2 + 1, mid + 1, r, u, v, val);
         st[id] = merge(st[id * 2], st[id * 2 + 1]);
     }
-    
     Node<T> get_range(int id, int l, int r, int u, int v) {
-        if (l > v || r < u) return merge.none();
+        if (l > v || r < u) return none<T>();
         if (l >= u && r <= v) return st[id];
         push_down(id, l, r);
         int mid = (l + r) / 2;
         return merge(get_range(id * 2, l, mid, u, v), get_range(id * 2 + 1, mid + 1, r, u, v));
     }
-    /*
-        Segtree<int, Merge<int> > st(n)
-    */
 };

@@ -2,11 +2,11 @@ struct Dsu{
 	int n, comp;
 	vector<int> par;
 	Dsu(){}
-	Dsu(int _n){
-		n = _n;
-		comp = _n;
-		par.assign(n + 1, -1);
-	}
+    void init(int _n) {
+        n = _n;
+        comp = _n;
+        par.assign(n + 1, -1);
+    }
 	void reset(){
 		fill(par.begin(), par.end(), -1);
 		comp = n;
@@ -14,7 +14,7 @@ struct Dsu{
 	int find(int u){
 		return par[u] < 0 ? u : par[u] = find(par[u]);
 	}
-	bool unite(int u, int v){
+	bool merge(int u, int v){
 		u = find(u);
 		v = find(v);
 		if(u == v) return false;

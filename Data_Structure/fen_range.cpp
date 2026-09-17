@@ -3,10 +3,10 @@ struct Fenwick{
     int n;
     vector<T> bit_mul, bit_add;
     Fenwick(){}
-    Fenwick(int _n){
+    void init(int _n) {
         n = _n;
-        bit_mul.assign(n + 2, 0);
-        bit_add.assign(n + 2, 0);
+        bit_mul.assign(n + 1, 0);
+        bit_add.assign(n + 1, 0);
     }
     void update(vector<T> &bit, int i, T v){
         for(; i <= n; i += (i & -i)) bit[i] += v;

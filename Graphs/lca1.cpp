@@ -1,30 +1,32 @@
-template<typename T>
 struct Lca{
-    const Forest<T> &f;
     int n, cnt, LOG;
     vector<int> high, in, out, node;
-    vector<vector<int> > minH;
+    vector<vector<int> > min_h;
     vector<int> comp;
     vector<bool> vis;
-    Lca(const Forest<T> &_f) : f(_f), n(f.n){
+    vector<vector<int>> st;
+    Lca() {}
+    void init() {
+        n = g.n;
         assert(n > 0);
-        LOG = 32 - __builtin_clz(2 * n + 5) + 1;
+        LOG = 32 - __builtin_clz(2 * n + 5);
         cnt = 0;
-        high.resize(n + 1);
-        node.resize(2 * n + 5);
-        in.resize(n + 1);
-        out.resize(n + 1);
-        minH.assign(2 * n + 5, vector<int> (LOG + 1));
-        comp.resize(n + 1);
+        high.assign(n + 1, 0);
+        node.assign(2 * n + 5, 0);
+        in.assign(n + 1, 0);
+        out.assign(n + 1, 0);
+        comp.assign(n + 1, 0);
+        min_h.assign(2 * n + 5, vector<int>(LOG + 1, 0));
         vis.assign(n + 1, false);
+        st.assign(n + 1, vector<int>(LOG + 1));
     }
     void dfs(int u, int p, int cid){
-        com[u] = cid
+        comp[u] = cid;
         vis[u] = true;
         node[++cnt] = u;
         in[u] = cnt;
-        for(int id : f.adj[u]){
-            int v = f.edges[id].from ^ f.edges[id].to ^ u;
+        for(int id : g.adj[u]){
+            int v = g.edges[id].from ^ g.edges[id].to ^ u;
             if(v == p) continue;
             high[v] = high[u] + 1;
             dfs(v, u, cid);
@@ -32,33 +34,53 @@ struct Lca{
         }
         out[u] = cnt;
     }
-    int minHigh(int u, int v){
+    int min_high(int u, int v){
         return high[u] < high[v] ? u : v;
     }
     void build(){
         high[0] = -1;
         int cid = 0;
-        for (int i = 1; i <= n; i++){
+        for(int i = 1; i <= n; i++){
             if(!vis[i]){
                 high[i] = 0;
                 dfs(i, -1, ++cid);
             }
         }
-        for (int i = 1; i <= cnt; i++){
-            minH[i][0] = node[i];
+        for(int i = 1; i <= cnt; i++){
+            min_h[i][0] = node[i];
         }
-        for (int j = 1; j <= LOG; j++){
-            for (int i = 1; i <= cnt - (1 << j) + 1; i++){
-                minH[i][j] = minHigh(minH[i][j - 1], minH[i + (1 << (j - 1))][j - 1]);
+        for(int j = 1; j <= LOG; j++){
+            for(int i = 1; i + (1 << j) - 1 <= cnt; i++){
+                min_h[i][j] = min_high(
+                    min_h[i][j - 1],
+                    min_h[i + (1 << (j - 1))][j - 1]
+                );
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            st[i][0] = i;
+        }
+        for (int j = 1; j <= LOG; j++) {
+            for (int i = 1; i + (1 << j) - 1 <= n; i++) {
+                st[i][j] = lca(st[i][j - 1], st[i + (1 << (j - 1))][j - 1]);
             }
         }
     }
     int lca(int u, int v){
         assert(comp[u] == comp[v]);
-        int pu = in[u]; 
+        int pu = in[u];
         int pv = in[v];
         if(pu > pv) swap(pu, pv);
-        int k = 32 - __builtin_clz(pv - pu + 1);
-        return minHigh(minH[pu][k], minH[pv - (1 << k) + 1][k]);
+        int len = pv - pu + 1;
+        int k = 31 - __builtin_clz(len);
+        return min_high(
+            min_h[pu][k],
+            min_h[pv - (1 << k) + 1][k]
+        );
+    }
+    int range_lca(int l, int r) {
+        int len = r - l + 1;
+        int k = __lg(len);
+        return lca(st[l][k], st[r - (1 << k) + 1][k]);
     }
 };

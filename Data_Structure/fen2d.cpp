@@ -1,9 +1,13 @@
 template<typename T>
-struct FenWick2D{
+struct Fenwick2D{
     int n, m;
     vector<vector<T> > bit;
-    FenWick2D(){}
-    FenWick2D(int _n, int _m) : n(_n), m(_m), bit(_n + 2, vector<T>(_m + 2, 0)) {}
+    Fenwick2D(){}
+    void init(int _n, int _m) {
+        n = _n;
+        m = _m;
+        bit.assign(n + 1, vector<T>(m + 1));
+    }
     void update(int x, int y, T v) { 
         for(int i = x; i <= n; i += (i & -i)){
             for(int j = y; j <= m; j += (j & -j)){

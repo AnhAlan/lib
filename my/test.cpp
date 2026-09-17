@@ -58,5 +58,21 @@ vector<int> random_vector(int n){
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
+
+    system("gen.exe > input.txt");
+    system("sol.exe < input.txt > output.txt");
+    system("brute.exe < input.txt > answer.txt");
+    if (system("fc output.txt answer.txt > nul") != 0) {
+        cout << "WA at test " << '\n';
+        return 0;
+    }
+    /*
+    if (system("diff output.txt answer.txt > /dev/null") != 0) {
+        cout << "WA at test " << '\n';
+        return 0;
+    }   
+    LINUX
+    */
+    this_thread::sleep_for(chrono::milliseconds(100));
     
 }

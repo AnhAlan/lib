@@ -1,33 +1,35 @@
 template<typename T>
 struct Graph_cut {
-    const Undigraph<T> &g;
     int n, m, LOG, cnt;
     vector<int> low, num, in, out, high, num_child, dsu;
     vector<bool> is_bridge, is_cut;
     vector<vector<int>> par;
     vector<tuple<int, int, int>> sort_edges;
     int cnt_bridge, cnt_cut;
-    Graph_cut(const Undigraph<T> &_g) : g(_g) {
+    Graph_cut() {}
+    void init() {
+        assert(g.digraph == false);
         n = g.n;
         m = (int) g.edges.size();
         LOG = __lg(n) + 1;
         cnt = 0;
-        low.resize(n + 1);
-        num.resize(n + 1);
-        in.resize(n + 1);
-        out.resize(n + 1);
-        high.resize(n + 1);
-        num_child.resize(n + 1);
+        low.assign(n + 1, 0);
+        num.assign(n + 1, 0);
+        in.assign(n + 1, 0);
+        out.assign(n + 1, 0);
+        high.assign(n + 1, 0);
+        num_child.assign(n + 1, 0);
         dsu.assign(n + 1, -1);
-        is_bridge.assign(m + 1, false);
+        is_bridge.assign(m, false);
         is_cut.assign(n + 1, false);
         par.assign(n + 1, vector<int>(LOG + 1));
+        sort_edges.clear();
         cnt_bridge = cnt_cut = 0;
     }
     int find(int u) {
         return dsu[u] < 0 ? u : dsu[u] = find(dsu[u]);
     }
-    bool unite(int u, int v) {
+    bool merge(int u, int v) {
         u = find(u);
         v = find(v);
         if (u == v) return false;
@@ -36,7 +38,6 @@ struct Graph_cut {
         dsu[v] = u;
         return true;
     }
-
     void dfs(int u, int par_id) {
         low[u] = num[u] = ++cnt;
         in[u] = cnt;
@@ -57,20 +58,20 @@ struct Graph_cut {
                     is_bridge[id] = true;
                     cnt_bridge++;
                 }
-            } else {
+            }
+            else {
                 low[u] = min(low[u], num[v]);
             }
         }
         out[u] = cnt;
     }
-
     void build() {
         for (int i = 0; i < m; i++) {
             int u = g.edges[i].from;
             int v = g.edges[i].to;
             if (u > v) swap(u, v);
             sort_edges.push_back(make_tuple(u, v, i));
-            unite(u, v);
+            merge(u, v);
         }
         sort(sort_edges.begin(), sort_edges.end());
         for (int u = 1; u <= n; u++) {
@@ -92,11 +93,9 @@ struct Graph_cut {
             }
         }
     }
-
     bool in_subtree(int u, int v) {
         return num[u] <= num[v] && num[v] <= out[u];
     }
-
     int jump(int u, int k) {
         for (int j = LOG - 1; j >= 0; j--) {
             if ((1 << j) <= k) {
@@ -106,7 +105,6 @@ struct Graph_cut {
         }
         return u;
     }
-
     bool check_cut(int u, int v, int cut) {
         if (find(u) != find(v)) return false;
         if (!is_cut[cut]) return true;
@@ -117,11 +115,14 @@ struct Graph_cut {
         if (child_v > 0 && low[child_v] < num[cut]) child_v = -1;
         return child_u == child_v;
     }
-
     bool check_bridge(int u, int v, int cut_u, int cut_v) {
         if (find(u) != find(v)) return false;
         if (cut_u > cut_v) swap(cut_u, cut_v);
-        auto it = lower_bound(sort_edges.begin(), sort_edges.end(), make_tuple(cut_u, cut_v, -1));
+        auto it = lower_bound(
+            sort_edges.begin(),
+            sort_edges.end(),
+            make_tuple(cut_u, cut_v, -1)
+        );
         int id = get<2>(*it);
         if (!is_bridge[id]) return true;
         int child = (par[cut_v][0] == cut_u ? cut_v : cut_u);
@@ -129,5 +130,4 @@ struct Graph_cut {
         bool v_in = in_subtree(child, v);
         return u_in == v_in;
     }
-
 };

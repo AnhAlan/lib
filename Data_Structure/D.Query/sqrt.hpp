@@ -1,13 +1,11 @@
 int block; // block = sqrt(n)
-struct Query{
+struct Query {
     int l, r, id;
-    Query(){}
-    Query(int _l, int _r, int _id) : l(_l), r(_r), id(_id) {}
-    bool operator < (const Query &other){
-        int blockA = l / block;
-        int blockB = other.l / block;
-        if (blockA != blockB) return blockA < blockB;
+    bool operator < (const Query &other) const {
+        int block_a = l / block;
+        int block_b = other.l / block;
+        if (block_a != block_b) return block_a < block_b;
+        if (block_a & 1) return r > other.r;
         return r < other.r;
     }
 };
-

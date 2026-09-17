@@ -5,7 +5,7 @@ struct Matrix {
     Matrix(int _n = 0, int _m = 0) {
         n = _n;
         m = _m;
-        a.assign(n, vector<T>(m));
+        a.assign(n, vector<T>(m, 0));
     }
     Matrix operator + (const Matrix &other) const {
         assert(n == other.n && m == other.m);
@@ -13,7 +13,7 @@ struct Matrix {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 res.a[i][j] = a[i][j] + other.a[i][j];
-                //if (res.a[i][j] >= mod) res.a[i][j] -= mod;
+                if (res.a[i][j] >= mod) res.a[i][j] -= mod;
             }
         }
         return res;
@@ -24,8 +24,7 @@ struct Matrix {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 for (int k = 0; k < other.m; k++) {
-                    res.a[i][k] += a[i][j] * other.a[j][k];
-                    //if (res.a[i][k] >= 1LL * mod * mod) res.a[i][k] -= 1LL * mod * mod;
+                    res.a[i][k] = (res.a[i][k] + 1LL * a[i][j] * other.a[j][k]) % mod;
                 }
             }
         }
@@ -34,15 +33,11 @@ struct Matrix {
     Matrix operator ^ (long long k) const {
         assert(n == m);
         Matrix res(n, n);
-        for (int i = 0; i < n; i++) {
-            res.a[i][i] = 1;
-        }
-        Matrix mul = *this;
+        for (int i = 0; i < n; i++) res.a[i][i] = 1;
+        Matrix base = *this;
         while (k > 0) {
-            if (k & 1) {
-                res = res * mul;
-            }
-            mul = mul * mul;
+            if (k & 1) res = res * base;
+            base = base * base;
             k >>= 1;
         }
         return res;

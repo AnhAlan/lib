@@ -1,31 +1,32 @@
-struct Trie_node {
+struct Node {
     int child[2];
     int cnt;
-    Trie_node() {
+    Node() {
         child[0] = child[1] = -1;
         cnt = 0;
     }
 };
 struct Trie {
-    vector<Trie_node> node;
+    vector<Node> nodes;
     int root;
     int xor_mask;
-    Trie() {
+    Trie() {}
+    void init(int max) {
         root = 0;
         xor_mask = 0;
-        node.emplace_back(); 
+        nodes.emplace_back();
     }
     void add(int k) {
         int cur = root;
-        node[cur].cnt++;
+        nodes[cur].cnt++;
         for (int i = 30; i >= 0; i--) { 
             int b = (k >> i) & 1;
-            if (node[cur].child[b] == -1) {
-                node[cur].child[b] = (int)node.size();
-                node.emplace_back();
+            if (nodes[cur].child[b] == -1) {
+                nodes[cur].child[b] = (int)nodes.size();
+                nodes.emplace_back();
             }
-            cur = node[cur].child[b];
-            node[cur].cnt++;
+            cur = nodes[cur].child[b];
+            nodes[cur].cnt++;
         }
     }
 };

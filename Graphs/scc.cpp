@@ -1,6 +1,4 @@
-template<typename T>
 struct Scc {
-    const Digraph<T> &g;
     int n;
     int timer = 0;
     int scc_cnt = 0;
@@ -8,12 +6,18 @@ struct Scc {
     vector<bool> in_stack;
     vector<vector<int>> scc;
     stack<int> st;
-    Scc(const Digraph<T> &_g) : g(_g), n(_g.n){
+    Scc() {}
+    void init() {
+        assert(g.digraph);
+        n = g.n;
+        timer = 0;
+        scc_cnt = 0;
         num.assign(n + 1, 0);
         low.assign(n + 1, 0);
         comp.assign(n + 1, 0);
         in_stack.assign(n + 1, false);
-        scc.resize(n + 1);
+        scc.assign(n + 1, {});
+        while (!st.empty()) st.pop();
     }
     void dfs(int u) {
         num[u] = low[u] = ++timer;
@@ -44,8 +48,7 @@ struct Scc {
     void build_scc() {
         if(scc_cnt > 0) return;
         for(int i = 1; i <= n; i++) {
-            if(!num[i]) 
-                dfs(i);
+            if(!num[i]) dfs(i);
         }
     }
     vector<vector<int>> build_dag() {
