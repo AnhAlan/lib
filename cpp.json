@@ -2750,12 +2750,12 @@
       "}",
       "template<typename T, typename Y>",
       "void sub_mod(T &x, const Y &y) {",
-      "    x -= y;",
+      "    x = (x - y) % mod;",
       "    if (x < 0) x += mod;",
       "}",
       "template<typename T, typename Y>",
       "void mul_mod(T &x, const Y &y) {",
-      "    x = (int)(1ll * x * y % mod);",
+      "    x = (T)(1ll * x * y % mod);",
       "}"
     ],
     "description": "modint"
