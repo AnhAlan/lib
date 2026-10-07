@@ -5,6 +5,9 @@ struct Line {
     bool operator < (long long t) const {return p < t; }
 };
 struct Line_container : multiset<Line, less<>> {
+    // (for doubles, use inf = 1/.0, div(a,b) = a/b)
+    // query max a * t + b
+    // query min add(-a, -b) -query(t)
     static const long long inf = 1e18;
     void print() {
         for (const auto &line : *this) {

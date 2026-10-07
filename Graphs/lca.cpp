@@ -63,10 +63,7 @@ struct Lca {
                 if(par[i][j - 1] != 0) {
                     int p = par[i][j - 1];
                     par[i][j] = par[p][j - 1];
-                    lca_edges[i][j] = merge(
-                        lca_edges[i][j - 1],
-                        lca_edges[p][j - 1]
-                    );
+                    lca_edges[i][j] = merge(lca_edges[i][j - 1],lca_edges[p][j - 1]);
                 }
                 else {
                     par[i][j] = 0;
@@ -97,8 +94,7 @@ struct Lca {
         Node<T> res = none<T>();
         if(high[u] < high[v]) swap(u, v);
         for(int i = LOG; i >= 0; i--) {
-            if(par[u][i] != 0 &&
-               high[par[u][i]] >= high[v]) {
+            if(par[u][i] != 0 && high[par[u][i]] >= high[v]) {
                 res = merge(res, lca_edges[u][i]);
                 u = par[u][i];
             }

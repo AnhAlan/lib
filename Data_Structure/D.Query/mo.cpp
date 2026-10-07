@@ -25,3 +25,14 @@ struct Query{
         return ord < other.ord;
     }
 };
+
+/*
+    int l = 1, r = 0
+    for (const &qr : q) {
+        while (r < qr.r) add(++r);
+        while (l < qr.l) remove(l++)
+        while (l > qr.l) add(--l)
+        while (r > qr.r) remove(r--)
+    }
+
+*/

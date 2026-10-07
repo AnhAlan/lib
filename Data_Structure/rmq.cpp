@@ -26,6 +26,6 @@ struct Rmq {
     T get(int l, int r) {
         assert(l <= r && l >= 1 && r <= n);
         int k = 31 - __builtin_clz(r - l + 1);
-        return merge( rmq[l][k], rmq[r - (1 << k) + 1][k]);
+        return merge(rmq[l][k], rmq[r - (1 << k) + 1][k]);
     }
 };

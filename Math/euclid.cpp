@@ -10,7 +10,6 @@ int euclid(int a, int b, int &x, int &y) {
     y = x1 - (a / b) * y1;
     return g;
 }
-
 int inv(int b, int P) {
     int x1 = 0, y1 = 0;
     int g = euclid(b, P, x1, y1);

@@ -1,6 +1,6 @@
 struct Combi {
     int maxn;
-    int mod = 1e9 + 87;
+    int mod = 1e9 + 7;
     vector<long long> fac, inv;
     Combi(int _maxn) {
         maxn = _maxn;

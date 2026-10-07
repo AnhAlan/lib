@@ -1,7 +1,6 @@
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
 using namespace __gnu_pbds;
-
 template<class T>
 using pbds = tree<
     T,
@@ -10,7 +9,6 @@ using pbds = tree<
     rb_tree_tag,
     tree_order_statistics_node_update
 >;
-
 /*
    pbds<int> s;
    s.insert(x)

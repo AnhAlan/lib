@@ -11,7 +11,6 @@ vector<T> ford_bellman(const Graph<T> &_g, const vector<int> &starts) {
         for (const auto &e : _g.edges) {
             if (dist[e.from] != INF &&
                 dist[e.to] > dist[e.from] + e.cost) {
-
                 dist[e.to] = dist[e.from] + e.cost;
                 updated = true;
             }

@@ -1,5 +1,5 @@
-long double brute_force(vector<Point> &P, int l, int r) {
-    long double ans = 1e18;
+long double brute_force(vector<P> &P, int l, int r) {
+    double ans = 1e18;
     for (int i = l; i <= r; i++) {
         for (int j = i+1; j <= r; j++) {
             ans = min(ans, P[i].dist(P[j]));
@@ -7,20 +7,20 @@ long double brute_force(vector<Point> &P, int l, int r) {
     }
     return ans;
 }
-long double close(vector<Point> &Px, vector<Point> &Py, int l, int r) {
+long double close(vector<P> &Px, vector<P> &Py, int l, int r) {
     int n = r - l + 1;
     if (n <= 3) return brute_force(Px, l, r);
     int mid = (l + r) / 2;
     long double midx = Px[mid].x;
-    vector<Point> Pyl, Pyr;
+    vector<P> Pyl, Pyr;
     for (auto &p : Py) {
         if (p.x <= midx) Pyl.push_back(p);
         else Pyr.push_back(p);
     }
-    long double dl = close(Px, Pyl, l, mid);
-    long double dr = close(Px, Pyr, mid+1, r);
-    long double d = min(dl, dr);
-    vector<Point> strip;
+    double dl = close(Px, Pyl, l, mid);
+    double dr = close(Px, Pyr, mid+1, r);
+    double d = min(dl, dr);
+    vector<P> strip;
     for (auto &p : Py) {
         if (fabs(p.x - midx) < d) strip.push_back(p);
     }
@@ -31,10 +31,10 @@ long double close(vector<Point> &Px, vector<Point> &Py, int l, int r) {
     }
     return d;
 }
-long double close_pair(const vector<Point> &P) {
-    int n = P.size();
-    vector<Point> Px = P, Py = P;
-    sort(Px.begin(), Px.end(), [](const Point &a, const Point &b){ return a.x < b.x; });
-    sort(Py.begin(), Py.end(), [](const Point &a, const Point &b){ return a.y < b.y; });
-    return close(Px, Py, 0, n-1);
+long double close_pair(const vector<P> &p) {
+    int n = (int) p.size();
+    vector<P> px = p, Py = p;
+    sort(px.begin(), px.end(), [](const P &a, const P &b){ return a.x < b.x; });
+    sort(Py.begin(), Py.end(), [](const P &a, const P &b){ return a.y < b.y; });
+    return close(px, Py, 0, n - 1);
 }

@@ -1,3 +1,4 @@
+
 template<typename T>
 struct Hld {
     int n;
@@ -64,14 +65,15 @@ struct Hld {
         st.init(n, v);
     }
     void build_edges() {
+        // build index 1 edges
         vector<int> v(n + 1, 0);
         for (int i = 1; i <= n; i++) {
             if (par_id[i] != 0) {
                 int id = par_id[i];
-                v[pos[i]] = g.edges[id].cost;
+                v[pos[i] - 1] = g.edges[id].cost;
             }
         }
-        st.init(n, v);
+        st.init(n - 1, v);
     }
     Node<T> get_node(int u, int v) {
         Node<T> res = none<T>();

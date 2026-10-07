@@ -1,5 +1,5 @@
 template<typename T>
-vector<T> Spfa(const Digraph<T> &g, int start) {
+vector<T> Spfa(const Graph<T> &g, int start) {
     T INF = numeric_limits<T>::max() / 2;
     vector<T> dist(g.n + 1, INF);
     vector<bool> in_queue(g.n + 1, false);
