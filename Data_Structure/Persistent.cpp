@@ -2,25 +2,30 @@ template<typename T>
 struct Node {
     Node *left, *right;
     T sum, lazy;
-    Node(Node* _l = nullptr, Node* _r = nullptr, T _s = 0, T _lz = 0)
+    explicit Node(Node* _l = nullptr, Node* _r = nullptr, T _s = 0, T _lz = 0)
         : left(_l), right(_r), sum(_s), lazy(_lz) {}
 };
 
 template<typename T>
 struct Persistent {
-    vector<Node<T>> pool;
+    vector<Node<T>> st;
     Node<T>* null_node;
     int n;
+    int cnt;
     Persistent() {}
-    void init(int _n) {
+    void init(int _n, int q) {                               
         n = _n;
-        pool.reserve(n * 60); // carefully
-        null_node = create();         
+        cnt = 0;
+        int len = 1;
+        while ((1ll << len) < n) len++;
+        st.resize(2ll * n + 1ll * q * 8 * (len + 1) + 5);      
+        null_node = create();
+        null_node->left = null_node->right = null_node;    
     }
     Node<T>* create(Node<T>* old = nullptr) {
-        if (old == nullptr) pool.emplace_back();
-        else pool.push_back(*old);
-        return &pool.back();
+        if (old == nullptr) st[cnt] = Node<T>();
+        else st[cnt] = *old;                                   
+        return &st[cnt++];
     }
     void apply(Node<T>* id, int l, int r, T val) {
         id->sum += val * (r - l + 1);
@@ -29,8 +34,8 @@ struct Persistent {
     void push(Node<T>* id, int l, int r) {
         if (id->lazy == 0 || l == r) return;
         int mid = (l + r) >> 1;
-        id->left  = create(id->left  ? id->left  : null_node);
-        id->right = create(id->right ? id->right : null_node);
+        id->left  = create(id->left);
+        id->right = create(id->right);
         apply(id->left,  l, mid, id->lazy);
         apply(id->right, mid + 1, r, id->lazy);
         id->lazy = 0;
@@ -64,7 +69,7 @@ struct Persistent {
         return id;
     }
     Node<T>* update_range(Node<T>* old, int l, int r, int u, int v, T val) {
-        if (l > v || r < u) return old;                
+        if (l > v || r < u) return old;
         Node<T>* id = create(old);
         if (u <= l && r <= v) {
             apply(id, l, r, val);
@@ -88,6 +93,7 @@ struct Persistent {
         res += get(id->right, mid + 1, r, u, v);
         return res;
     }
+    Node<T>* build() { return build(1, n); }
     Node<T>* update(Node<T>* root, int pos, T val) {
         return update(root, 1, n, pos, val);
     }

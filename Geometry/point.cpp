@@ -1,6 +1,10 @@
+const double EPS = 1e-9;
 double PI = acos(-1.0);
 template<class T>
-int sgn(T x) {return (x > 0) - (x < 0);}
+int sgn(T x) {
+    return (x > 0) - (x < 0);
+    //return (x > EPS) - (x < -EPS);
+}
 template<class T>
 struct Point {
     T x, y;
@@ -21,6 +25,9 @@ struct Point {
     double dist(const Point &o) const {return sqrt((double)dist2(o));}
     T dot(const Point &o) const {return x * o.x + y * o.y;}
     T cross(const Point &o) const {return (x * o.y) - (o.x * y);}
+    static T cross(const Point &A, const Point &B, const Point &C) {
+        return (B - A).cross(C - A);
+    }
     // return radian [-pi, pi]
     double angle() const {return atan2l((double)y, (double)x);}
     static double angle(const Point &a, const Point &b) {
@@ -51,6 +58,7 @@ struct Point {
         return ca.len2() < cb.len2(); 
     }
     friend ostream& operator<<(ostream& os, Point p) {
-		return os << "(" << p.x << "," << p.y << ")"; 
+        os << fixed << setprecision(2);
+        return os << "(" << p.x << "," << p.y << ")"; 
     }
 };

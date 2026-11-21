@@ -3,6 +3,7 @@ struct Spf {
     vector<int> spf;
     Spf(int _n) {
         n = _n;
+        assert(n <= (int) 1e6);
         spf.assign(n + 1, 0);
     }
     void build() {

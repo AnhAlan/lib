@@ -1,4 +1,4 @@
-vector<int> mu(int n) {
+vector<int> mobius(int n) {
     vector<int> res(n + 1);
     vector<bool> is_composite(n + 1, false);
     vector<int> primes;

@@ -6,7 +6,7 @@ __int128 string_to_i128(const string &s) {
         negative = true;
         i = 1;
     }
-    for (; i < s.size(); i++) {
+    for (; i < (int)s.size(); i++) {
         res = res * 10 + (s[i] - '0');
     }
     return negative ? -res : res;

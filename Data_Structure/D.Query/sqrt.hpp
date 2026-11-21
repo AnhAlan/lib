@@ -9,3 +9,14 @@ struct Query {
         return r < other.r;
     }
 };
+/*
+    int currL = 0, currR = -1; // empty window [currL, currR]
+    for (const auto &qu : queries) {
+        // expand first, then shrink, so the window never has negative size
+        while (currL > qu.l) add(--currL);
+        while (currR < qu.r) add(++currR);
+        while (currL < qu.l) del(currL++);
+        while (currR > qu.r) del(currR--);
+        ans[qu.idx] = currSum;
+    }
+*/
